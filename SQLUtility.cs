@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace CPUFramework
 {
@@ -24,9 +26,34 @@ namespace CPUFramework
             cmd.Connection = conn;
             var dr = cmd.ExecuteReader();
             dt.Load(dr);
+
+            SetAllColumnsAllowNull(dt);
+
             return dt;
             //- take sql statemnt and return a data table 
         }
+
+        public static void ExecuteSQL(string sqlstatemnt)
+        {
+            GetDataTable(sqlstatemnt);
+        }
+
+        private static void SetAllColumnsAllowNull(DataTable dt)
+        {
+            foreach(DataColumn c in dt.Columns)
+            {
+                c.AllowDBNull = true;
+            }
+        }
+
+        public static void DebugPringDataTable(DataTable dt)
+        {
+           foreach(DataRow r in dt.Rows) { 
+                foreach(DataColumn c in dt.Columns)
+                {
+                    Debug.Print(c.ColumnName + " = "+ r[c.ColumnName].ToString());
+                }
+            }
+        }
     }
 }
-//note
