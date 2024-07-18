@@ -55,5 +55,36 @@ namespace CPUFramework
                 }
             }
         }
+
+        public static int GetFirstColumnFirstRowValue(string sql)
+        {
+            int n = 0;
+            DataTable dt = GetDataTable(sql);
+            if (dt.Rows.Count > 0 && dt.Columns.Count > 0)
+            {
+                if (dt.Rows[0][0] != DBNull.Value)
+                {
+                    int.TryParse(dt.Rows[0][0].ToString(), out n);
+                }
+            }
+            return n;
+        }
+
+        public static DateTime GetFirstColumnFirstRowValueDate(string sql) { 
+            DateTime result = DateTime.Now; 
+            DataTable dt = GetDataTable(sql); 
+            if (dt.Rows.Count > 0 && dt.Columns.Count > 0) 
+            { 
+                if (dt.Rows[0][0] != DBNull.Value) 
+                { 
+                    DateTime parsedDate; 
+                    if (DateTime.TryParse(dt.Rows[0][0].ToString(), out parsedDate)) 
+                    { 
+                        result = parsedDate; 
+                    } 
+                } 
+            }
+            return result; 
+        }
     }
 }
