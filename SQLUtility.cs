@@ -43,21 +43,8 @@ namespace CPUFramework
         }
         public static DataTable GetDataTable(string sqlstatement)
         {
-            DataTable dt = new();
-            SqlConnection conn = new();
-            conn.ConnectionString = ConnectionString;
-            conn.Open();
-            //DisplayMessage("Connection Status", conn.State.ToString());
-            var cmd = new SqlCommand();
-            cmd.CommandText = sqlstatement;
-            cmd.Connection = conn;
-            var dr = cmd.ExecuteReader();
-            dt.Load(dr);
-
-            SetAllColumnsAllowNull(dt);
-
-            return dt;
-            //- take sql statemnt and return a data table 
+            Debug.Print(sqlstatement);
+            return GetDataTable(new SqlCommand(sqlstatement));
         }
 
         public static void ExecuteSQL(string sqlstatemnt)
