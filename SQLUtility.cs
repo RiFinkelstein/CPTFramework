@@ -35,6 +35,7 @@ namespace CPUFramework
             {
                 conn.Open();
                 cmd.Connection = conn;
+                Debug.Print(GetSQL(cmd));
                 SqlDataReader dr = cmd.ExecuteReader();
                 dt.Load(dr);
             }
@@ -58,6 +59,48 @@ namespace CPUFramework
             {
                 c.AllowDBNull = true;
             }
+        }
+
+        public static string GetSQL(SqlCommand cmd)
+        {
+            string val = "";
+#if DEBUG
+            StringBuilder sb= new StringBuilder();
+            if (cmd.Connection != null)
+            {
+                sb.AppendLine($"--{cmd.Connection.DataSource}");
+                sb.AppendLine($"use {cmd.Connection.Database}");
+                sb.AppendLine("go");
+
+
+            }
+            if (cmd.CommandType == CommandType.StoredProcedure)
+            {
+                sb.AppendLine($"exec {cmd.CommandText}");
+                int paramcount = cmd.Parameters.Count - 1;
+                int paramnum = 0;
+                string comma = ",";
+                foreach (SqlParameter p in cmd.Parameters)
+                {
+                    if (p.Direction != ParameterDirection.ReturnValue)
+                    {
+                        if (paramnum == paramcount)
+                        {
+                            comma = "";
+                        }
+                        sb.AppendLine($"{p.ParameterName}= {(p.Value == null ? "null" : p.Value.ToString())}{comma}");
+
+                    }
+                    paramnum++; 
+                }
+            }
+            else
+            {
+                sb.AppendLine(cmd.CommandText);
+            }
+            val = sb.ToString();
+#endif
+            return val;
         }
 
         public static void DebugPringDataTable(DataTable dt)
