@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,11 +34,20 @@ namespace CPUFramework
             DataTable dt = new();
             using (SqlConnection conn = new SqlConnection(SQLUtility.ConnectionString))
             {
+                
                 conn.Open();
                 cmd.Connection = conn;
                 Debug.Print(GetSQL(cmd));
-                SqlDataReader dr = cmd.ExecuteReader();
-                dt.Load(dr);
+                try
+                {
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dt.Load(dr);
+                }
+                catch(SqlException ex)
+                {
+                    string msg= ParseConstraintMsg(ex.Message);
+                    throw new Exception(msg);
+                }
             }
             SetAllColumnsAllowNull(dt);
             return dt;
@@ -142,6 +152,41 @@ namespace CPUFramework
                 } 
             }
             return result; 
+        }
+        public static string ParseConstraintMsg(string msg)
+        {
+            string origmsg = msg;
+            string prefex = "ck_";
+            string msgend = "";
+            if (msg.Contains(prefex) == false)
+            {
+                if (msg.Contains("u_")){
+                    prefex = "U_";
+                    msgend = "must be uniqe";
+                }
+            else if (msg.Contains("f_"))
+                {
+                    prefex = "f_";
+                }
+            }
+            if (msg.Contains(prefex))
+            {
+                msg = msg.Replace("\"", "' ");
+                int pos = msg.IndexOf(prefex) + prefex.Length;
+                msg = msg.Substring(pos);
+                pos = msg.IndexOf("'");
+                if (pos == -1)
+                {
+                    msg= origmsg;
+                }
+                else
+                {
+                    msg = msg.Substring(0, pos);
+                    msg = msg.Replace("_", " ");
+                    msg = msg + msgend;
+                }
+            }
+            return msg;
         }
 
     }
