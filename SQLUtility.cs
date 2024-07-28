@@ -137,6 +137,13 @@ namespace CPUFramework
             return n;
         }
 
+        public static string GetFirstColumnFirstRowValuestring(string sql)
+        {
+            string n = " ";
+            DataTable dt = GetDataTable(sql);
+            return n;
+        }
+
         public static DateTime GetFirstColumnFirstRowValueDate(string sql) { 
             DateTime result = DateTime.Now; 
             DataTable dt = GetDataTable(sql); 
