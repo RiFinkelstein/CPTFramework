@@ -155,11 +155,23 @@ namespace CPUFramework
             return n;
         }
 
+
         public static string GetFirstColumnFirstRowValuestring(string sql)
         {
-            string n = " ";
+            string firstColumnValue = "";
+
             DataTable dt = GetDataTable(sql);
-            return n;
+
+            // Check if the DataTable has rows and columns
+            if (dt != null && dt.Rows.Count > 0 && dt.Columns.Count > 0)
+            {
+                // Check if the value in the first row of the first column is not DBNull
+                if (dt.Rows[0][0] != DBNull.Value)
+                {
+                    firstColumnValue = dt.Rows[0][0].ToString();
+                }
+            }
+            return firstColumnValue;
         }
 
         public static DateTime GetFirstColumnFirstRowValueDate(string sql) { 
