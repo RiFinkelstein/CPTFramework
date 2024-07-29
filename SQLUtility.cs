@@ -71,7 +71,8 @@ namespace CPUFramework
         {
             int returnvalue = 0;
             string msg = "";
-            if (cmd.CommandType == CommandType.StoredProcedure) {
+            if (cmd.CommandType == CommandType.StoredProcedure) 
+            {
                 foreach (SqlParameter p in cmd.Parameters)
                 {
                     if (p.Direction == ParameterDirection.ReturnValue)
@@ -94,8 +95,9 @@ namespace CPUFramework
                     if (msg == "")
                     {
                         msg = $"{cmd.CommandText}did not do action that was requested.";
-                        throw new Exception(msg);
                     }
+                        throw new Exception(msg);
+                    
                 }
             }
         }
