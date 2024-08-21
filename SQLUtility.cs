@@ -45,7 +45,10 @@ namespace CPUFramework
                     cmd.Parameters[paramname].Value = row[col.ColumnName];
                 }
             }
+
             DoExecuteSQL(cmd, false);
+
+
             foreach (SqlParameter p in cmd.Parameters)
             {
                 if (p.Direction == ParameterDirection.InputOutput)
@@ -55,9 +58,12 @@ namespace CPUFramework
                     {
                         row[columnname] = p.Value;
                     }
+
                 }
 
             }
+            row.Table.AcceptChanges();
+
         }
 
         private static DataTable DoExecuteSQL(SqlCommand cmd, bool loadtable)
@@ -180,6 +186,15 @@ namespace CPUFramework
             }
             return value;
         }
+        public static bool TableHasChanges(DataTable dt)
+        {
+            bool b = false;
+            if (dt.GetChanges() != null)
+            {
+                b = true;
+            }
+            return b;
+        }
 
         public static string GetSQL(SqlCommand cmd)
         {
@@ -301,9 +316,11 @@ namespace CPUFramework
 
         public static string ParseConstraintMsg(string msg)
         {
+
             string origmsg = msg;
             string prefex = "ck_";
             string msgend = "";
+            string notnullprefex = "Cannot insert the value NULL into column '";
             if (msg.Contains(prefex) == false)
             {
                 if (msg.Contains("u_"))
@@ -314,6 +331,10 @@ namespace CPUFramework
                 else if (msg.Contains("f_"))
                 {
                     prefex = "f_";
+                }
+                else if (msg.Contains(notnullprefex)){
+                    prefex = notnullprefex;
+                    msgend = " cannot be blank.";
                 }
             }
             if (msg.Contains(prefex))
