@@ -34,7 +34,16 @@ namespace CPUFramework
             return DoExecuteSQL(cmd, true);
         }
 
-        public static void SaveDataRow(DataRow row, string sprocname)
+        public static void SaveDataTable(DataTable dt, string sprocname)
+        {
+            var rows = dt.Select("", "", DataViewRowState.Added | DataViewRowState.ModifiedCurrent);
+            foreach(DataRow r in rows)
+            {
+                SaveDataRow(r, sprocname, false);
+            }
+        }
+
+        public static void SaveDataRow(DataRow row, string sprocname, bool acceptChanges= true)
         {
             SqlCommand cmd = GetSqlcommand(sprocname);
             foreach (DataColumn col in row.Table.Columns)
@@ -62,7 +71,10 @@ namespace CPUFramework
                 }
 
             }
-            row.Table.AcceptChanges();
+            if (acceptChanges == true)
+            {
+                row.Table.AcceptChanges();
+            }
 
         }
 
@@ -95,7 +107,7 @@ namespace CPUFramework
                     throw new Exception(cmd.CommandText + ":" + ex.Message + ex);
                 }
             }
-            SetAllColumnsAllowNull(dt);
+            SetAllColumnsProperties(dt);
             return dt;
         }
 
@@ -152,11 +164,12 @@ namespace CPUFramework
             GetDataTable(sqlstatemnt);
         }
 
-        private static void SetAllColumnsAllowNull(DataTable dt)
+        private static void SetAllColumnsProperties(DataTable dt)
         {
             foreach (DataColumn c in dt.Columns)
             {
                 c.AllowDBNull = true;
+                c.AutoIncrement = false;    
             }
         }
         public static int GetValueFromFirstRowAsInt(DataTable dt, string columnname)
