@@ -55,6 +55,13 @@ namespace CPUFramework
                 }
             }
 
+            // Ensure required parameters are included
+            if (cmd.Parameters.Contains("@recipeID") && !row.Table.Columns.Contains("recipeID")) 
+                { throw new ArgumentException("The 'recipeID' parameter is required but not provided in the DataRow."); } 
+            if (cmd.Parameters.Contains("@directionsID") && !row.Table.Columns.Contains("directionsID")) 
+            { cmd.Parameters["@directionsID"].Value = row["directionsID"] ?? DBNull.Value; }  
+
+
             DoExecuteSQL(cmd, false);
 
 
