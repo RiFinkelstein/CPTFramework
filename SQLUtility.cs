@@ -53,18 +53,8 @@ namespace CPUFramework
                 {
                     cmd.Parameters[paramname].Value = row[col.ColumnName];
                 }
-            }
-
-            // Ensure required parameters are included
-            if (cmd.Parameters.Contains("@recipeID") && !row.Table.Columns.Contains("recipeID")) 
-                { throw new ArgumentException("The 'recipeID' parameter is required but not provided in the DataRow."); } 
-            if (cmd.Parameters.Contains("@directionsID") && !row.Table.Columns.Contains("directionsID")) 
-            { cmd.Parameters["@directionsID"].Value = row["directionsID"] ?? DBNull.Value; }  
-
-
+            }         
             DoExecuteSQL(cmd, false);
-
-
             foreach (SqlParameter p in cmd.Parameters)
             {
                 if (p.Direction == ParameterDirection.InputOutput)
@@ -74,15 +64,12 @@ namespace CPUFramework
                     {
                         row[columnname] = p.Value;
                     }
-
                 }
-
             }
             if (acceptChanges == true)
             {
                 row.Table.AcceptChanges();
             }
-
         }
 
         private static DataTable DoExecuteSQL(SqlCommand cmd, bool loadtable)
